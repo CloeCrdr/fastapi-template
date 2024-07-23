@@ -3,7 +3,10 @@ name: CI/CD Workflow
 on:
   push:
     branches:
-      - main 
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
@@ -11,10 +14,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
@@ -31,9 +34,7 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           HOST: ${{ secrets.EC2_HOST }}
-          USER: ${{ secrets.EC2_USER }}
         run: |
           echo "$SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
-          ssh -i private_key.pem $USER@$HOST 'bash -s' < deploy_script.sh
- 
+          ssh -i private_key.pem ubuntu@$HOST 'bash -s' < deploy_script.sh
