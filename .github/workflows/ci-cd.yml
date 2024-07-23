@@ -28,7 +28,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest
+          pytest --rootdir=/home/runner/work/fastapi-template
 
       - name: Deploy to EC2
         env:
