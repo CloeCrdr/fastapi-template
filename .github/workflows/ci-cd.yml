@@ -29,12 +29,28 @@ jobs:
       - name: Run tests
         run: |
           pytest --rootdir=/home/runner/work/fastapi-template
-
+          
       - name: Deploy to EC2
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-          HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          SSH_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         run: |
-          echo "$SSH_PRIVATE_KEY" > private_key.pem
+          echo "$SSH_KEY" > private_key.pem
           chmod 600 private_key.pem
-          ssh -i private_key.pem ubuntu@$HOST 'bash -s' < deploy_script.sh
+          ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USER@$EC2_HOST << 'EOF'
+            # Change to the application directory
+            cd /home/ec2-user/citest1
+            
+            # Pull the latest code
+            git pull origin main
+            
+            # Activate virtual environment
+            source venv/bin/activate
+            
+            # Install dependencies
+            pip install -r requirements.txt
+            
+            # Restart the application service
+            sudo systemctl restart citest1
+          EOF
