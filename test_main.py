@@ -1,10 +1,11 @@
-# tests/test_main.py
-from fastapi.testclient import TestClient
-from fastapi_template.main import app
+import pytest
+from httpx import AsyncClient, ASGITransport
+from main import app
 
-client = TestClient(app)
-
-def test_read_main():
-    response = client.get("/")
+@pytest.mark.asyncio
+async def test_ping():
+    transport = ASGITransport(app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        response = await ac.get("/ping")
     assert response.status_code == 200
-    assert response.json() == {"message": "Hello World"}
+    assert response.json() == "pong"
