@@ -20,8 +20,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
             # Stop and remove the existing container if it exists
-            docker stop myfastapi || true
-            docker rm myfastapi || true
+            docker stop fastapi_template || true
+            docker rm fastapi_template || true
 
             # Navigate to the application directory
             cd /home/ec2-user/fastapi_template
