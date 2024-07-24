@@ -5,10 +5,12 @@ import os
 from dotenv import load_dotenv
 from fastapi.responses import StreamingResponse
 import io
+from .routes.file_routes import router as file_routes_router
 
 load_dotenv()
 
 app = FastAPI()
+app.include_router(file_routes_router)
 
 s3_client = boto3.client(
     's3',
@@ -16,7 +18,6 @@ s3_client = boto3.client(
     aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
 )
 
-# Nom du bucket
 BUCKET_NAME = os.getenv('AWS_BUCKET_NAME')
 
 @app.post("/upload/")
